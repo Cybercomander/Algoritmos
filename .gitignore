@@ -1,0 +1,6 @@
+## Archivos de compilación 
+/bin
+*.dSYM
+
+## Archivos de mi sistema
+.DS_Store
