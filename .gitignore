@@ -4,3 +4,6 @@
 
 ## Archivos de mi sistema
 .DS_Store
+
+## Virtual Enviroment de Python
+.venv
