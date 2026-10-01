@@ -3,28 +3,7 @@
 #include <string.h>
 #include "Usuario.h"
 #include "Merge.h"
-
-//DEFINES
-#define MAX_LINEA 300
-#define ARCHIVO_DEFAULT "usuarios.txt"
-
-// PROTOTIPOS PARA MANEJO DE LISTAS
-Lista* crear_lista();
-User* crear_usuario(int id, const char *nombre, int grado);
-void insertar_usuario(Lista *lista, User *usuario);
-void liberar_lista(Lista *lista);
-
-// PROTOTIPOS PARA CARGA DE DATOS
-int cargar_usuarios(const char *archivo, Lista *lista);
-
-// PROTOTIPOS PARA IMPRESION
-void imprimir(User usuario);
-void mostrar_encabezado();
-void imprimir_lista_usuarios(Lista *lista);
-
-// PROTOTIPOS PARA LOS MENUS
-void limpiar_buffer();
-void menu(Lista *lista);
+#include "Main.h"
 
 int main(int argc, char *argv[]) {
     // Obtener la ruta del archivo de usuarios
@@ -45,6 +24,50 @@ int main(int argc, char *argv[]) {
     liberar_lista(lista);
 
     return 0;
+}
+
+// Menu principal
+void menu(Lista *lista) {
+    int opcion = 0;
+
+    while (opcion != 4) {
+        printf("\n\n");
+        printf("\n======================================================");
+        printf("\n          ANALIZADOR DE REDES SOCIALES (DEMO)         ");
+        printf("\n======================================================");
+        printf("\n 1. Mostrar lista de usuarios");
+        printf("\n 2. Ordenar por GRADO - Ascendente");
+        printf("\n 3. Ordenar por GRADO - Descendente");
+        printf("\n 4. Salir");
+        printf("\n------------------------------------------------------");
+        printf("\n Ingrese una opcion: ");
+        opcion = 0;
+        scanf("%d", &opcion);
+        limpiar_buffer();
+
+        switch (opcion) {
+            case 1:
+                mergeSort(lista, POR_ID, ASCENDENTE);
+                printf("\n Lista de usuarios:");
+                imprimir_lista_usuarios(lista);
+                break;
+            case 2:
+                mergeSort(lista, POR_GRADO, ASCENDENTE);
+                printf("\n Usuarios ordenados por grado (ascendente):");
+                imprimir_lista_usuarios(lista);
+                break;
+            case 3:
+                mergeSort(lista, POR_GRADO, DESCENDENTE);
+                printf("\n Usuarios ordenados por grado (descendente):");
+                imprimir_lista_usuarios(lista);
+                break;
+            case 4:
+                printf("\n Saliendo del programa...\n");
+                break;
+            default:
+                printf("\n Opcion no valida. Intente nuevamente.");
+        }
+    }
 }
 
 // Funcion para inicializar una lista vacia
@@ -173,48 +196,4 @@ void imprimir_lista_usuarios(Lista *lista) {
 void limpiar_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
-}
-
-// Menu principal
-void menu(Lista *lista) {
-    int opcion = 0;
-
-    while (opcion != 4) {
-        printf("\n\n");
-        printf("\n======================================================");
-        printf("\n          ANALIZADOR DE REDES SOCIALES (DEMO)         ");
-        printf("\n======================================================");
-        printf("\n 1. Mostrar lista de usuarios");
-        printf("\n 2. Ordenar por GRADO - Ascendente");
-        printf("\n 3. Ordenar por GRADO - Descendente");
-        printf("\n 4. Salir");
-        printf("\n------------------------------------------------------");
-        printf("\n Ingrese una opcion: ");
-        opcion = 0;
-        scanf("%d", &opcion);
-        limpiar_buffer();
-
-        switch (opcion) {
-            case 1:
-                mergeSort(lista, POR_ID, ASCENDENTE);
-                printf("\n Lista de usuarios:");
-                imprimir_lista_usuarios(lista);
-                break;
-            case 2:
-                mergeSort(lista, POR_GRADO, ASCENDENTE);
-                printf("\n Usuarios ordenados por grado (ascendente):");
-                imprimir_lista_usuarios(lista);
-                break;
-            case 3:
-                mergeSort(lista, POR_GRADO, DESCENDENTE);
-                printf("\n Usuarios ordenados por grado (descendente):");
-                imprimir_lista_usuarios(lista);
-                break;
-            case 4:
-                printf("\n Saliendo del programa...\n");
-                break;
-            default:
-                printf("\n Opcion no valida. Intente nuevamente.");
-        }
-    }
 }
