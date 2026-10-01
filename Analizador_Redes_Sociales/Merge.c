@@ -1,45 +1,124 @@
-#include "Header.h"
+#include <stdlib.h>
+#include "Merge.h"
+#include "Pila.h"
 
-void mergeSort(int arr[], int n){
-        //SI LA CANTIDAD DE ELEMENTOS ES MENOR A 2, ENTONCES NO ES UN ARREGLO, ES SOLO UN NÚMERO
-    if (n < 2)
-        return 1;
-
-    //VARIABLE AUXILIAR
-    int temp[n];
+// Funcion para ordenar la lista de usuarios con merge sort iterativo usando una pila
+void mergeSort(Lista *lista, Criterio criterio, Orden orden){
+    //SI LA CANTIDAD DE ELEMENTOS ES MENOR A 2, LA LISTA YA ESTA ORDENADA
+    if (lista->longitud < 2)
+        return;
 
     //GENERACIÓN DE PILA PARA EL DESARROLLO DEL MERGE
     Pila pila;
     inicializar_pila(&pila);
-    push(&pila, 0, n-1, DIVIDIR);
+    push(&pila, 0, lista->longitud - 1, DIVIDIR);
 
     while (!pila_vacia(&pila)){
         Nodo * m = pop(&pila);
-        if (m->izq >= m->der) continue;
-        int med = m->izq + (m->der - m->izq) / 2;
-        if (m->fase == DIVIDIR){
-            push(&pila, m->izq, m->der, MERGE);
-            push(&pila, med + 1, m->der, DIVIDIR);
-            push(&pila, m->izq, med, DIVIDIR);
+        int izq = m->izq;
+        int der = m->der;
+        Fase fase = m->fase;
+        free(m);
+
+        if (izq >= der) continue;
+        int med = izq + (der - izq) / 2;
+        if (fase == DIVIDIR){
+            push(&pila, izq, der, MERGE);
+            push(&pila, med + 1, der, DIVIDIR);
+            push(&pila, izq, med, DIVIDIR);
         }
         else
-            merge(&arr[0], &temp[0], m->izq, m->izq + (m->der - m->izq) / 2, m->der);
+            merge(lista, izq, med, der, criterio, orden);
     }
     vaciar(&pila);
 }
 
-void merge(int arr[], int temp[], int izq, int med, int der){
-    int i = izq;
-    int j = med+1;
-    int k = izq;
+// Funcion para mezclar las posiciones izq..med y med+1..der reenlazando los nodos de la lista
+void merge(Lista *lista, int izq, int med, int der, Criterio criterio, Orden orden){
+    User *primero = obtener_usuario(lista, izq);
+    User *ultimo_a = obtener_usuario(lista, med);
+    User *ultimo = obtener_usuario(lista, der);
 
-    while(i <= med && j <= der)
-        temp [k++] = (arr[i] <= arr[j]) ? arr[i++] : arr[j++];
-    while( i <= med ) 
-        temp[k++] = arr[i++];
-    while( j <= der ) 
-        temp[k++] = arr[j++];
+    //NODOS FUERA DEL RANGO PARA RECONECTAR AL FINAL
+    User *antes = primero->anterior;
+    User *despues = ultimo->siguiente;
 
-    for (k = izq ; k <= der ; k++)
-        arr[k] = temp[k];
+    //CORTAR LAS DOS CORRIDAS
+    User *a = primero;
+    User *b = ultimo_a->siguiente;
+    ultimo_a->siguiente = NULL;
+    ultimo->siguiente = NULL;
+
+    //MEZCLA DE LAS CORRIDAS USANDO UN NODO CENTINELA
+    User centinela;
+    centinela.siguiente = NULL;
+    User *actual = &centinela;
+
+    while (a != NULL && b != NULL){
+        if (comparar(a, b, criterio, orden) <= 0){
+            actual->siguiente = a;
+            a->anterior = actual;
+            a = a->siguiente;
+        }
+        else{
+            actual->siguiente = b;
+            b->anterior = actual;
+            b = b->siguiente;
+        }
+        actual = actual->siguiente;
+    }
+    while (a != NULL){
+        actual->siguiente = a;
+        a->anterior = actual;
+        a = a->siguiente;
+        actual = actual->siguiente;
+    }
+    while (b != NULL){
+        actual->siguiente = b;
+        b->anterior = actual;
+        b = b->siguiente;
+        actual = actual->siguiente;
+    }
+
+    //RECONECTAR EL RANGO MEZCLADO CON EL RESTO DE LA LISTA
+    User *nuevo_primero = centinela.siguiente;
+    nuevo_primero->anterior = antes;
+    if (antes == NULL)
+        lista->cabeza = nuevo_primero;
+    else
+        antes->siguiente = nuevo_primero;
+
+    actual->siguiente = despues;
+    if (despues == NULL)
+        lista->cola = actual;
+    else
+        despues->anterior = actual;
+}
+
+// Funcion para obtener el usuario que esta en una posicion de la lista
+User* obtener_usuario(Lista *lista, int posicion){
+    User *actual = lista->cabeza;
+    for (int i = 0; i < posicion && actual != NULL; i++)
+        actual = actual->siguiente;
+    return actual;
+}
+
+// Funcion para comparar dos usuarios segun el criterio y el orden
+int comparar(User *a, User *b, Criterio criterio, Orden orden){
+    int resultado;
+
+    if (criterio == POR_ID)
+        resultado = a->id - b->id;
+    else
+        resultado = a->grado - b->grado;
+
+    //EL ORDEN DESCENDENTE INVIERTE SOLO EL CRITERIO PRINCIPAL
+    if (orden == DESCENDENTE)
+        resultado = -resultado;
+
+    //DESEMPATE POR ID ASCENDENTE
+    if (resultado == 0)
+        resultado = a->id - b->id;
+
+    return resultado;
 }

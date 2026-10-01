@@ -1,32 +1,31 @@
 #ifndef PILA_H
 #define PILA_H
 
-    #include "Header.h"
-
-    //ESTRUCTURA DE NODO PARA LAS PILAS
-    typedef struct Nodo{
-        User * userIzq;
-        User * userDer;
-        Fase fase;
-        struct Nodo *sig;
-    }Nodo;
-
+    //FASES DEL MERGE SORT
     typedef enum{
         DIVIDIR,
         MERGE
     }Fase;
 
+    //ESTRUCTURA DE NODO PARA LAS PILAS
+    typedef struct Nodo{
+        int izq;
+        int der;
+        Fase fase;
+        struct Nodo *sig;
+    }Nodo;
+
     //ESTRUCTURA DE PILAS
     typedef struct Pila{
-        User * top;
+        Nodo * top;
         int cant;
     }Pila;
 
    //PILAS
-    User* crear_nodo(int izq, int der, Fase fasear);
+    Nodo* crear_nodo(int izq, int der, Fase fase);
     void inicializar_pila(Pila*);
     int push(Pila* pila, int izq, int der, Fase fase);
-    User * pop(Pila*);
+    Nodo * pop(Pila*);
     int pila_vacia(Pila* );
     void vaciar(Pila*);
 

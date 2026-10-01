@@ -1,10 +1,17 @@
-#include "Header.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "Pila.h"
 
 Nodo * crear_nodo(int izq, int der, Fase fase) {
     Nodo * nodo = (Nodo *)malloc(sizeof(Nodo));
-    nodo->userIzq = izq;
-    nodo->userDer = der;
+    if (nodo == NULL) {
+        printf("\nError al asignar memoria para el nodo de la pila");
+        exit(EXIT_FAILURE);
+    }
+    nodo->izq = izq;
+    nodo->der = der;
     nodo->fase = fase;
+    nodo->sig = NULL;
     return nodo;
 }
 
@@ -20,7 +27,7 @@ int push(Pila* pila, int izq, int der, Fase fase){
     pila->cant++;
 
     return 1;
-}                    
+}
 
 Nodo * pop(Pila* pila){
     Nodo *nodo = pila->top;
