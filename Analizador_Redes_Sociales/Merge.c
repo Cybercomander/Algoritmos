@@ -1,4 +1,4 @@
-#include "header.h"
+#include "Header.h"
 
 void mergeSort(int arr[], int n){
         //SI LA CANTIDAD DE ELEMENTOS ES MENOR A 2, ENTONCES NO ES UN ARREGLO, ES SOLO UN NÚMERO

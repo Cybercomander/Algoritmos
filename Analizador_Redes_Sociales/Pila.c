@@ -1,9 +1,9 @@
-#include "header.h"
+#include "Header.h"
 
-Nodo* crear_nodo(int izq, int der, Fase fase) {
-    Nodo *nodo = (Nodo*)malloc(sizeof(Nodo));
-    nodo->izq = izq;
-    nodo->der = der;
+Nodo * crear_nodo(int izq, int der, Fase fase) {
+    Nodo * nodo = (Nodo *)malloc(sizeof(Nodo));
+    nodo->userIzq = izq;
+    nodo->userDer = der;
     nodo->fase = fase;
     return nodo;
 }
@@ -14,7 +14,7 @@ void inicializar_pila(Pila *pila) {
 }
 
 int push(Pila* pila, int izq, int der, Fase fase){
-    Nodo *nodo = crear_nodo(izq, der, fase);
+    Nodo * nodo = crear_nodo(izq, der, fase);
     nodo->sig = pila->top;
     pila->top = nodo;
     pila->cant++;
@@ -22,7 +22,7 @@ int push(Pila* pila, int izq, int der, Fase fase){
     return 1;
 }                    
 
-Nodo* pop(Pila* pila){
+Nodo * pop(Pila* pila){
     Nodo *nodo = pila->top;
     pila->top = nodo->sig;
     pila->cant--;
@@ -37,7 +37,7 @@ int pila_vacia(Pila* pila){
 }
 
 void vaciar(Pila* pila){
-    Nodo *nodo = pila->top;
+    Nodo * nodo = pila->top;
     while (nodo != NULL) {
         pila->top = nodo->sig;
         free(nodo);
