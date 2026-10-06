@@ -5,9 +5,9 @@
 #include "Merge.h"
 #include "Main.h"
 
-int main(int argc, char *argv[]) {
+int main(void) {
     // Obtener la ruta del archivo de usuarios
-    const char *archivo = (argc > 1) ? argv[1] : ARCHIVO_DEFAULT;
+    const char *archivo = ARCHIVO_DEFAULT;
 
     // Crear la lista y cargar los usuarios
     Lista *lista = crear_lista();
@@ -33,7 +33,7 @@ void menu(Lista *lista) {
     while (opcion != 4) {
         printf("\n\n");
         printf("\n======================================================");
-        printf("\n          ANALIZADOR DE REDES SOCIALES (DEMO)         ");
+        printf("\n        ANALIZADOR DE REDES SOCIALES Eq: Null         ");
         printf("\n======================================================");
         printf("\n 1. Mostrar lista de usuarios");
         printf("\n 2. Ordenar por GRADO - Ascendente");
