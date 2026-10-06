@@ -1,0 +1,15 @@
+Ana Lopez;5
+Beto Ramirez;132
+Carla Mendoza;0
+Diego Torres;27
+Elena Vargas;3
+Fernando Castro;87
+Gabriela Ruiz;41
+Hector Morales;5
+Isabel Navarro;1
+Jorge Salazar;27
+Karla Ortega;0
+Luis Herrera;8
+Mariana Flores;150
+Nicolas Rios;2
+Olivia Campos;35
