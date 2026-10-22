@@ -75,7 +75,7 @@ void greedy(int A[], int sizeA, int B[], int sizeB, int k){
 
         if (tmp < tmpp)
             swap(A, posi, B, posii);
-            k--;
+        k--;
     }
 }
 
