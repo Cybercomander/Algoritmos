@@ -1,36 +1,28 @@
-#include "Header.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "kruskal.h"
 
-// Uso: ./kruskal [archivo] [vértice_a_buscar]
-// Sin argumentos lee Grafo1.txt (desde la carpeta Kruskal).
-int main(int argc, char * argv[]){
-    const char * ruta = argc > 1 ? argv[1] : "Grafo1.txt";
-    int dirigido = 0;
+int main(void) {
+    int num_vertices = 5;
+    Grafo *g = crear_grafo(num_vertices);
 
-    Graph * grafo = leerGrafo(ruta, &dirigido);
-    if(grafo == NULL)
-        return 1;
+    agregar_arista(g, 0, 1, 2);
+    agregar_arista(g, 1, 2, 3);
+    agregar_arista(g, 1, 4, 5);
+    agregar_arista(g, 0, 3, 6);
+    agregar_arista(g, 2, 4, 7);
+    agregar_arista(g, 1, 3, 8);
+    agregar_arista(g, 3, 4, 9);
 
-    printf("Grafo %s con %d vértices\n", dirigido ? "dirigido" : "no dirigido", grafo->grado);
+    int num_aristas, num_mst;
+    Arista *aristas = extraer_aristas(g, &num_aristas);
+    Arista *mst = malloc((num_vertices - 1) * sizeof(Arista));
 
-    if(argc > 2){
-        int buscado = atoi(argv[2]);
-        printf(dfs(grafo, buscado) ? "\nEl vértice %d es alcanzable desde el inicio (%d)\n"
-                                : "\nEl vértice %d no es alcanzable desde el inicio (%d)\n",
-                buscado, grafo->nodos->dato);
-    }
-
-    int cant = 0;
-    Arco * mst = kruskal(grafo, &cant);
-    int total = 0;
-
-    printf("\nÁrbol de expansión mínimo (%d aristas):\n", cant);
-    for(int i = 0; i < cant; i++){
-        printf("  %d - %d  peso %d\n", mst[i].origen->dato, mst[i].destino->dato, mst[i].peso);
-        total += mst[i].peso;
-    }
-    printf("Peso total: %d\n", total);
+    int peso = kruskal(aristas, num_aristas, g->num_vertices, mst, &num_mst);
+    printf("%d\n", peso);
 
     free(mst);
-    liberarGrafo(grafo);
+    free(aristas);
+    liberar_grafo(g);
     return 0;
 }
