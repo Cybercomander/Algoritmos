@@ -61,12 +61,15 @@ void liberar_grafo(Grafo *g) {
 
 /* Orden: primero por distancia, en empate por numero de vertice. */
 static bool menor(ElemHeap a, ElemHeap b) {
-    if (a.distancia != b.distancia) return a.distancia < b.distancia;
+    if (a.distancia != b.distancia) 
+        return a.distancia < b.distancia;
     return a.vertice < b.vertice;
 }
 
 static void intercambiar(ElemHeap *a, ElemHeap *b) {
-    ElemHeap t = *a; *a = *b; *b = t;
+    ElemHeap t = *a; 
+    *a = *b; 
+    *b = t;
 }
 
 Heap *crear_heap(int capacidad) {
@@ -106,16 +109,22 @@ ElemHeap heap_extraer_min(Heap *h) {
     h->datos[0] = h->datos[--h->tamano];
 
     /* bajar la raiz a su lugar */
-    int i = 0;
+    int i = 0;                                   /* empezamos en la raiz */
     while (true) {
-        int izq = 2 * i + 1, der = 2 * i + 2, m = i;
-        if (izq < h->tamano && menor(h->datos[izq], h->datos[m])) m = izq;
-        if (der < h->tamano && menor(h->datos[der], h->datos[m])) m = der;
-        if (m == i) break;
-        intercambiar(&h->datos[i], &h->datos[m]);
-        i = m;
+        /* posiciones de los hijos; m guarda al mas pequeno de los tres */
+        int izq = 2 * i + 1;
+        int der = 2 * i + 2;
+        int m = i;
+        if (izq < h->tamano && menor(h->datos[izq], h->datos[m]))
+            m = izq;                             /* el hijo izquierdo es menor */
+        if (der < h->tamano && menor(h->datos[der], h->datos[m]))
+            m = der;                             /* el hijo derecho es aun menor */
+        if (m == i)
+            break;                               /* ya es menor que sus hijos: esta en su lugar */
+        intercambiar(&h->datos[i], &h->datos[m]); /* bajarlo un nivel */
+        i = m;                                   /* seguir desde su nueva posicion */
     }
-    return min;
+    return min;                                  /* devolver el minimo que estaba en la raiz */
 }
 
 void liberar_heap(Heap *h) {
@@ -126,32 +135,55 @@ void liberar_heap(Heap *h) {
 
 /* ================= Dijkstra (version perezosa) ================= */
 
+/* Calcula la distancia mas corta desde 'origen' a todos los vertices.
+   Al terminar: d[v] = distancia minima a v, pred[v] = vertice anterior a v en ese camino. */
 void dijkstra(const Grafo *g, int origen, int d[], int pred[]) {
-    int V = g->num_vertices;
-    bool *fijo = calloc(V, sizeof(bool));
-    Heap *heap = crear_heap(g->num_aristas + 1);   /* una insercion por arista + la inicial */
+    /* cuantos vertices tiene el grafo */
+    int vertices = g->num_vertices;
+    /* fijo[v] = true cuando ya conocemos la distancia final de v (empieza todo en false) */
+    bool *fijo = calloc(vertices, sizeof(bool));
+    /* cola de prioridad: siempre nos da el vertice con menor distancia.
+       Tamano: una insercion por arista + la del origen */
+    Heap *heap = crear_heap(g->num_aristas + 1);
+    /* si no hubo memoria para alguno de los dos, avisar y terminar */
     if (!fijo || !heap) { fprintf(stderr, "Sin memoria\n"); exit(1); }
 
-    for (int v = 0; v < V; v++) {
-        d[v] = INF;
-        pred[v] = -1;
+    /* al inicio no sabemos llegar a ningun vertice */
+    for (int v = 0; v < vertices; v++) {
+        d[v] = INF;      /* distancia "infinita": todavia no hay camino */
+        pred[v] = -1;    /* -1: no tiene vertice anterior */
     }
+    /* al origen se llega sin costo */
     d[origen] = 0;
+    /* metemos el origen a la cola para empezar desde ahi */
     heap_insertar(heap, 0, origen);
 
+    /* repetir mientras queden vertices por revisar */
     while (!heap_vacio(heap)) {
+        /* sacar el vertice con la menor distancia */
         ElemHeap e = heap_extraer_min(heap);
+        /* u = ese vertice, du = su distancia desde el origen */
         int u = e.vertice, du = e.distancia;
 
-        if (fijo[u]) continue;          /* pareja obsoleta: se descarta */
+        /* si u ya estaba fijo, esta entrada es vieja: la ignoramos */
+        if (fijo[u]) continue;
+        /* la distancia de u ya es la definitiva */
         fijo[u] = true;
 
+        /* recorrer cada vecino de u */
         for (Nodo *p = g->lista[u]; p != NULL; p = p->siguiente) {
+            /* v = el vecino al que lleva esta arista */
             int v = p->destino;
-            if (!fijo[v] && du + p->peso < d[v]) {   /* du es finito: no desborda */
+            /* si v no esta fijo y pasar por u es mas corto que lo que ya teniamos...
+               (du nunca es INF aqui, asi que la suma no se desborda) */
+            if (!fijo[v] && du + p->peso < d[v]) {
+                /* ...guardar la nueva distancia mas corta */
                 d[v] = du + p->peso;
+                /* recordar que a v se llega desde u */
                 pred[v] = u;
-                heap_insertar(heap, d[v], v);        /* la vieja se queda */
+                /* meter v a la cola con su nueva distancia
+                   (la entrada vieja de v se queda; se ignora al salir) */
+                heap_insertar(heap, d[v], v);
             }
         }
     }
